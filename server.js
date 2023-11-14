@@ -1,9 +1,11 @@
 const express = require("express");
 const dotenv = require("dotenv").config();
+const cors = require("cors");
 const app = express();
 const port = process.env.PORT;
 
 app.use(express.json());
+app.use(cors());
 
 app.use("/api/login", require('./routes/loginRoutes'));
 app.use('/api/user/create', require('./routes/adminRoutes'));
