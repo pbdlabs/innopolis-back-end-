@@ -50,7 +50,7 @@ const deleteUser = async (req, res)=>{
 
 const getUserList = async (req, res)=>{
 
-    const getUserQuery = `SELECT EM.Id, EM.EmployeeName, EM.EmployeeId, DM.DepartmentName, RM.RoleName  FROM employeemaster as EM Join departmentmaster as DM ON EM.refDepartment = DM.Id join rolemaster as RM ON RM.Id = EM.refRole WHERE EM.isActive = true;`;
+    const getUserQuery = `SELECT EM.Id, EM.EmployeeName, UP.EmailId, EM.EmployeeId, DM.DepartmentName, RM.RoleName  FROM employeemaster as EM Join departmentmaster as DM ON EM.refDepartment = DM.Id join rolemaster as RM ON RM.Id = EM.refRole JOIN userpool as UP ON UP.refEmployeeMaster = EM.Id WHERE EM.isActive = true;`;
     
     try{
         const userList = await executeQuery(getUserQuery);
