@@ -9,6 +9,21 @@ const getComponentType =async (req, res)=>{
     res.status(200).json(componentTypeList);
 }
 
+const addComponentType = async (req, res) =>{
+
+    const component_type = req.body.component_type;
+
+    if(!component_type){
+        res.status(400).json({ message: "Missing required fields." });
+    }
+    let query = `INSERT INTO componenttypemaster (ComponentType) values (${component_type});`;
+
+    await executeQuery(query);
+
+    res.status(200).json({ message : "Added new component type"});
+
+}
+
 const getItemType =async (req, res)=>{
     let id = req.body.type_id;
     let query = `SELECT Id as item_id, ItemType FROM itemmaster where refComponentType = ${id};`;
@@ -16,6 +31,20 @@ const getItemType =async (req, res)=>{
     let itemList = await executeQuery(query);
 
     res.status(200).json(itemList);
+}
+
+const addItemType = async (req, res) => {
+    const {type_id, item} = req.body;
+
+    if(!type_id || !item){
+        res.status(400).json({ message: "Missing required fields." });
+    }
+    const query = "insert into itemmaster (ItemType, refComponentType) values (?, ?);";
+    const params = [item, type_id];
+
+    await executeQuery(query, params);
+    res.status(200).json({ message : "Added new item"});
+
 }
 
 const getComponent =async (req, res)=>{
@@ -27,6 +56,20 @@ const getComponent =async (req, res)=>{
     res.status(200).json(itemList);
 }
 
+const addComponent = async(req, res) =>{
+    const {item_id, component_name} = req.body;
+
+    if(!item_id || !component_name){
+        res.status(400).json({ message: "Missing required fields." });
+    }
+    let query = "insert into componentmaster (ComponentName, refItem) values (?, ?);";
+    let params = [item_id,component_name];
+
+    await executeQuery(query, params);
+
+    res.status(200).json({ message : "Added new component"});
+}
+
 const getSpecs =async (req, res)=>{
     let id = req.body.component_id;
     let query = `SELECT Id AS spec_id, Specs FROM specsmaster where refComponent = ${id};`;
@@ -34,6 +77,19 @@ const getSpecs =async (req, res)=>{
     let specList = await executeQuery(query);
 
     res.status(200).json(specList);
+}
+
+const addSpecs = async (req, res)=>{
+    const {component_id, specs} = req.body;
+
+    if(!component_id || !specs){
+        res.status(400).json({ message: "Missing required fields." });
+    }
+
+    let query = "insert into specsmaster (Specs, refComponent) values (?,?);";
+    let params = [specs, component_id];
+    await executeQuery(query, params);
+    res.status(200).json({ message : "Added new specs"});
 }
 
 const getMaterialList= async (req, res)=>{
@@ -67,4 +123,4 @@ const materialReq = async(req, res) =>{
 
 }
 
-module.exports = {getComponentType, getComponent, getItemType, getSpecs, getMaterialList, materialReq};
+module.exports = {getComponentType,addComponentType, getComponent,addComponent, addItemType, getItemType, getSpecs,addSpecs, getMaterialList, materialReq};

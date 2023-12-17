@@ -1,3 +1,4 @@
+const { stat } = require('fs');
 const executeQuery = require('../config/db');
 
 const getClient = async(req, res) =>{
@@ -7,6 +8,38 @@ const getClient = async(req, res) =>{
     let clientList = await executeQuery(query);
 
     res.status(200).json(clientList);
+
+}
+
+const addClient = async (req, res)=>{
+    const {client_name, client_address, contact_person, contact_email} = req.body;
+
+    if(!client_name || !client_address || !contact_person || !contact_email){
+        res.status(400).json({ message: "Missing required fields." });
+    }
+
+    let query = "INSERT INTO clientmaster (ClientName, ClientAddress, ContactPerson, ContactEmail) values (?,?,?,?);"
+    let params = [client_name, client_address, contact_person, contact_email];
+
+    await executeQuery(query, params);
+
+    res.status(200).json({Message: "Client added successfully."});
+
+}
+
+const editClient = async (req, res) =>{
+    const {client_name, client_address, contact_person, contact_email, Id} = req.body;
+
+    if(!client_name || !client_address || !contact_person || !contact_email || !Id){
+        res.status(400).json({ message: "Missing required fields." });
+    }
+
+    let query = "UPDATE clientmaster SET ClientName = ?, ClientAddress = ?, ContactPerson = ? ,ContactEmail = ? WHERE Id = ?;"
+    let params = [client_name, client_address, contact_person, contact_email, Id];
+
+    await executeQuery(query, params);
+
+    res.status(200).json({Message: "Client updated successfully."});
 
 }
 
@@ -33,7 +66,7 @@ const createProject = async (req, res) =>{
     const {project_code, project_name, plant, project_lead, client } = req.body;
 
     if(!project_code || !project_name || !plant || !project_lead || !client){
-        return res.status(400).json({ message: "Missing required fields." });
+        res.status(400).json({ message: "Missing required fields." });
     }
 
     let query = "INSERT INTO projectmaster (ProjectCode, ProjectName, refPlant, refProjectLead, refClient) VALUES (?, ?, ?, ?, ?);";
@@ -78,8 +111,26 @@ const getMaterialReq = async (req, res) =>{
 
     let materialReqList = await executeQuery(query);
 
-    res.status(200).res.json(materialReqList);
+    res.status(200).json(materialReqList);
 
 } 
 
-module.exports = {getClient, getDesignEmployees, getPlantList, createProject, getMaterialReq}
+const approveMaterialReq = async (req, res) =>{
+
+    const {status, Id} = req.body;
+
+    if(!status || !Id){
+        res.status(400).json({ message: "Missing required fields." });
+    }
+
+    let query = "UPDATE materialmaster set Status = ? , hodApprovedDate = CURRENT_TIMESTAMP where Id = ?;";
+    let params = [status, Id]
+
+    await executeQuery(query, params);
+
+    let response = status === "Y" ? "Material request approved" : "Material request declined";
+
+    res.status(200).json({Message : response});
+}
+
+module.exports = {getClient, getDesignEmployees, getPlantList, createProject, getMaterialReq, addClient, editClient, approveMaterialReq}
