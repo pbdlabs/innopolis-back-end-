@@ -1,5 +1,6 @@
-const { stat } = require('fs');
+
 const executeQuery = require('../config/db');
+
 
 const getClient = async(req, res) =>{
 
@@ -78,6 +79,28 @@ const createProject = async (req, res) =>{
     
 }
 
+const getProjects = async(req, res) =>{
+
+    let query = `select pm.Id "project_id", pm.ProjectName "project_name", pm.ProjectNumber "project_code", plm.PlantName "plant_name", em.EmployeeName "project_lead", cm.ClientName "client_name", pm.status "status", pm.DateCreated "date_created" from projectmaster pm join employeemaster em on em.Id = pm.refProjectLead join clientmaster cm on cm.Id = pm.refClient join plantmaster plm on plm.Id = pm.refPlant;`;
+    let projectList = await executeQuery(query);
+    
+    res.status(200).json(projectList);
+}
+
+const editProject = async(req, res)=>{
+    const {project_code, project_name, plant, project_lead, client, project_id, status } = req.body;
+
+    if(!project_code || !project_name || !plant || !project_lead || !client || !project_id || !status){
+        res.status(400).json({ message: "Missing required fields." });
+    }
+
+    let query = `UPDATE projectmaster SET ProjectNumber = ?, ProjectName = ?, refProjectLead= ?, refClient = ?, refPlant = ?, status = ?,  where Id = ?;`;
+    let params = [project_code, project_name,project_lead,client, plant, status, project_id];
+
+    await executeQuery(query, params);
+    res.status(200).json({Message: "Project updated successfully."});
+}
+
 const getMaterialReq = async (req, res) =>{
 
     let query = `SELECT 
@@ -133,4 +156,4 @@ const approveMaterialReq = async (req, res) =>{
     res.status(200).json({Message : response});
 }
 
-module.exports = {getClient, getDesignEmployees, getPlantList, createProject, getMaterialReq, addClient, editClient, approveMaterialReq}
+module.exports = {getClient, getDesignEmployees, getPlantList, createProject, getProjects, editProject, getMaterialReq, addClient, editClient, approveMaterialReq}

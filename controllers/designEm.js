@@ -49,6 +49,9 @@ const addItemType = async (req, res) => {
 
 const getComponent =async (req, res)=>{
     let id = req.body.item_id;
+    if(!id){
+        res.status(400).json({ message: "Missing required fields." });
+    }
     let query = `SELECT id as component_id, ComponentName FROM componentmaster where refItem = ${id};`;
 
     let itemList = await executeQuery(query);
@@ -92,6 +95,14 @@ const addSpecs = async (req, res)=>{
     res.status(200).json({ message : "Added new specs"});
 }
 
+const getProjects = async(req, res) =>{
+
+    let query = `select pm.Id "project_id", pm.ProjectName "project_name", pm.ProjectNumber "project_code", plm.PlantName "plant_name", em.EmployeeName "project_lead", cm.ClientName "client_name", pm.status "status", pm.DateCreated "date_created" from projectmaster pm join employeemaster em on em.Id = pm.refProjectLead join clientmaster cm on cm.Id = pm.refClient join plantmaster plm on plm.Id = pm.refPlant where pm.status = "Active";`;
+    let projectList = await executeQuery(query);
+    
+    res.status(200).json(projectList);
+}
+
 const getMaterialList= async (req, res)=>{
     let query = `SELECT 
                     ct.ComponentType AS 'Component type',
@@ -112,10 +123,10 @@ const getMaterialList= async (req, res)=>{
 
 const materialReq = async(req, res) =>{
 
-    const { component_type, component_name, item, specs, project_id, user_id} = req.body;
+    const { type_id, component_id, item_id, spec_id, project_id, user_id} = req.body;
 
     let query = "insert into materialmaster (refComponent, refComponentType, refSpecs, refItemType, refProject, RequestedBy) values(?,?,?,?,?,?);";
-    let params = [component_name, component_type,specs, item, project_id, user_id]
+    let params = [component_id, type_id,spec_id, item_id, project_id, user_id]
 
     await executeQuery(query, params);
 
@@ -123,4 +134,4 @@ const materialReq = async(req, res) =>{
 
 }
 
-module.exports = {getComponentType,addComponentType, getComponent,addComponent, addItemType, getItemType, getSpecs,addSpecs, getMaterialList, materialReq};
+module.exports = {getComponentType,addComponentType, getComponent,addComponent, addItemType, getItemType, getSpecs,addSpecs,getProjects, getMaterialList, materialReq};

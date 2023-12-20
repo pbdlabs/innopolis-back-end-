@@ -9,6 +9,7 @@ const {
   addItemType,
   getSpecs,
   addSpecs,
+  getProjects,
   getMaterialList,
   materialReq,
 } = require("../controllers/designEm");
@@ -18,6 +19,7 @@ router.route("/item").get(getItemType).post(addItemType);
 router.route("/component").get(getComponent).post(addComponent);
 router.route("/specs").get(getSpecs).post(addSpecs);
 router.route("/materials").get(getMaterialList);
-router.route("/").post(materialReq);
+router.route("/materialreq").post(materialReq);
+router.route('/projects').get(getProjects)
 
 module.exports = router;

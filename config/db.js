@@ -17,7 +17,7 @@ async function executeQuery(q, params, host, db, user, pwd){
     } catch(e){
         connection.destroy();
         console.info("Mysql error ::: ",e);
-        throw ("MySQL query error", e);
+        // throw ("MySQL query error", e);
     }
 }
 module.exports = executeQuery; 
