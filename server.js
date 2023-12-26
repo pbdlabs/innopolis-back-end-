@@ -16,6 +16,7 @@ app.use('/user/edit',require('./routes/adminRoutes'));
 app.use('/designem', require('./routes/designEm'));
 app.use('/designhd', require('./routes/designHod'));
 app.use('/purchaseem', require('./routes/purchaseEm'))
+app.use('/purchasehd', require('./routes/purchaseHod'))
  
 app.listen( port, ()=>{
     console.info(`Server running on port : ${port}`);
