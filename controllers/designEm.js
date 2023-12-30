@@ -25,7 +25,7 @@ const addComponentType = async (req, res) =>{
 }
 
 const getItemType =async (req, res)=>{
-    let id = req.body.type_id;
+    let id = req.query.type_id;
     let query = `SELECT Id as item_id, ItemType FROM itemmaster where refComponentType = ${id};`;
 
     let itemList = await executeQuery(query);
@@ -48,7 +48,7 @@ const addItemType = async (req, res) => {
 }
 
 const getComponent =async (req, res)=>{
-    let id = req.body.item_id;
+    let id = req.query.item_id;
     if(!id){
         res.status(400).json({ message: "Missing required fields." });
     }
@@ -74,7 +74,7 @@ const addComponent = async(req, res) =>{
 }
 
 const getSpecs =async (req, res)=>{
-    let id = req.body.component_id;
+    let id = req.query.component_id;
     let query = `SELECT Id AS spec_id, Specs FROM specsmaster where refComponent = ${id};`;
 
     let specList = await executeQuery(query);
