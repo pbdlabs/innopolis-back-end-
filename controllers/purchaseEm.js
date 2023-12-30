@@ -1,6 +1,29 @@
 const fs = require("fs");
 const executeQuery = require("../config/db");
 
+const getSupplier = async (req, res)=>{
+  const query = `SELECT SM.Id 'supplier_id', SM.Name 'supplier_name', SM.Email 'supplier_email', SM.Address 'supplier_address', SM.ContactNumber 'supplier_number' FROM suppliermaster SM;`;
+  const supplierList = await executeQuery(query);
+  res.status(200).send(supplierList);
+}
+
+const addSupplier = async (req, res)=>{
+  const {supplier_name,supplier_address, supplier_email, supplier_number} = req.body;
+  const query = `insert into suppliermaster ( Name, Address, Email, ContactNumber) values ( ?, ?, ?, ?);`;
+  const params = [supplier_name,supplier_address, supplier_email, supplier_number];
+  await executeQuery(query, params);
+  res.status(200).send("Supplier added successfully!");
+}
+
+const editSupplier = async (req, res)=>{
+  const {supplier_id, supplier_name,supplier_address, supplier_email, supplier_number} = req.body;
+  const query = `update suppliermaster set Name = ? , Email = ?,Address= ?, ContactNumber = ?  where Id = ?;`;
+  const params = [supplier_name, supplier_email, supplier_address, supplier_number, supplier_id];
+  await executeQuery(query, params);
+  res.status(200).send("Supplier edited successfully!")
+
+}
+
 const getMaterialReq = async (req, res) => {
   const query = `SELECT  mm.Id AS 'material_id', cm.ComponentName 'component_name', ct.ComponentType 'component_type', sm.Specs 'specs', im.ItemType 'item', pm.ProjectNumber 'project_number', pl.PlantName 'plant_name', pm.ProjectName 'project_name', em.EmployeeName 'requested_by', RequestedDate 'requested_date'
 FROM
@@ -193,4 +216,4 @@ function findContentType(buffer){
   }
 }
 
-module.exports = { getMaterialReq, addQuotation, getActiveQuotList, getArchivedQuotList, getApprovedQuotList, viewQuot, getQuotPdf, placeOrder, getActiveOrderList, getDeliveredOrderList, updateOrder, getInvoiceFile };
+module.exports = { getSupplier, addSupplier, editSupplier, getMaterialReq, addQuotation, getActiveQuotList, getArchivedQuotList, getApprovedQuotList, viewQuot, getQuotPdf, placeOrder, getActiveOrderList, getDeliveredOrderList, updateOrder, getInvoiceFile };
