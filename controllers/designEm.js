@@ -97,7 +97,7 @@ const addSpecs = async (req, res)=>{
 
 const getProjects = async(req, res) =>{
 
-    let query = `select pm.Id "project_id", pm.ProjectName "project_name", pm.ProjectNumber "project_code", plm.PlantName "plant_name", em.EmployeeName "project_lead", cm.ClientName "client_name", pm.status "status", pm.DateCreated "date_created" from projectmaster pm join employeemaster em on em.Id = pm.refProjectLead join clientmaster cm on cm.Id = pm.refClient join plantmaster plm on plm.Id = pm.refPlant where pm.status = "Active";`;
+    let query = `select pm.Id "project_id", pm.ProjectName "project_name", pm.ProjectNumber "project_code", plm.PlantName "plant_name", em.EmployeeName "project_lead", cm.ClientName "client_name", pm.status "status", pm.DateCreated "date_created" from projectmaster pm join employeemaster em on em.Id = pm.refProjectLead join clientmaster cm on cm.Id = pm.refClient join plantmaster plm on plm.Id = pm.refPlant where pm.status = 'Active';`;
     let projectList = await executeQuery(query);
     
     res.status(200).json(projectList);

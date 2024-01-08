@@ -70,7 +70,7 @@ const createProject = async (req, res) =>{
         res.status(400).json({ message: "Missing required fields." });
     }
 
-    let query = "INSERT INTO projectmaster (ProjectCode, ProjectName, refPlant, refProjectLead, refClient) VALUES (?, ?, ?, ?, ?);";
+    let query = "INSERT INTO projectmaster (ProjectNumber, ProjectName, refPlant, refProjectLead, refClient) VALUES (?, ?, ?, ?, ?);";
     let params = [project_code, project_name, plant, project_lead, client];
 
     await executeQuery(query, params);

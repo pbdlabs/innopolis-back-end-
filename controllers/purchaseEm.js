@@ -87,17 +87,17 @@ const addQuotation = async (req, res) => {
 };
 
 const getActiveQuotList = async (req, res) => {
-  const query = `SELECT QM.Id 'quotation_id', QM.QuotationNumber 'quotation_number', QM.QuotationValue 'quotation_value', JSON_LENGTH(CAST(QM.refMaterialArray AS JSON)) AS no_of_materials, SM.Name 'supplier_name', CASE WHEN QM.HoDApprovalStatus = "P" THEN 'Pending' WHEN QM.HoDApprovalStatus = "Y" THEN "Forwarded to finance" END AS 'status' FROM quotationmaster QM join suppliermaster SM ON SM.Id = QM.refSupplier where QM.QuotStatus = "Active";`;
+  const query = `SELECT QM.Id 'quotation_id', QM.QuotationNumber 'quotation_number', QM.QuotationValue 'quotation_value', JSON_LENGTH(CAST(QM.refMaterialArray AS JSON)) AS no_of_materials, SM.Name 'supplier_name', CASE WHEN QM.HoDApprovalStatus = 'P' THEN 'Pending' WHEN QM.HoDApprovalStatus = 'Y' THEN 'Forwarded to finance' END AS 'status' FROM quotationmaster QM join suppliermaster SM ON SM.Id = QM.refSupplier where QM.QuotStatus = 'Active';`;
   const activeQuotList = await executeQuery(query);
   res.status(200).send(activeQuotList);
 }
 const getArchivedQuotList = async (req, res) => {
-  const query = `SELECT QM.Id 'quotation_id', QM.QuotationNumber 'quotation_number', QM.QuotationValue 'quotation_value', JSON_LENGTH(CAST(QM.refMaterialArray AS JSON)) AS no_of_materials, SM.Name 'supplier_name' FROM quotationmaster QM join suppliermaster SM ON SM.Id = QM.refSupplier where QM.QuotStatus = "Archived";`;
+  const query = `SELECT QM.Id 'quotation_id', QM.QuotationNumber 'quotation_number', QM.QuotationValue 'quotation_value', JSON_LENGTH(CAST(QM.refMaterialArray AS JSON)) AS no_of_materials, SM.Name 'supplier_name' FROM quotationmaster QM join suppliermaster SM ON SM.Id = QM.refSupplier where QM.QuotStatus = 'Archived';`;
   const ArchivedQuotList = await executeQuery(query);
   res.status(200).send(ArchivedQuotList);
 }
 const getApprovedQuotList = async (req, res) =>{
-  const query = `SELECT QM.Id 'quotation_id', QM.QuotationNumber 'quotation_number', QM.QuotationValue 'quotation_value', JSON_LENGTH(CAST(QM.refMaterialArray AS JSON)) AS no_of_materials, SM.Name 'supplier_name' FROM quotationmaster QM join suppliermaster SM ON SM.Id = QM.refSupplier where QM.FinanceApprovalStatus = "Y";`;
+  const query = `SELECT QM.Id 'quotation_id', QM.QuotationNumber 'quotation_number', QM.QuotationValue 'quotation_value', JSON_LENGTH(CAST(QM.refMaterialArray AS JSON)) AS no_of_materials, SM.Name 'supplier_name' FROM quotationmaster QM join suppliermaster SM ON SM.Id = QM.refSupplier where QM.FinanceApprovalStatus = 'Y';`;
   const approvedQuotList = await executeQuery(query);
   res.status(200).send(approvedQuotList);
 }
@@ -150,13 +150,13 @@ const placeOrder = async(req, res)=>{
 }
 
 const getActiveOrderList = async (req, res)=>{
-  const query = `SELECT IM.Id 'invoice_id', IM.InvoiceNumber 'invoice_number',DATE_FORMAT(IM.DeliveryDate, '%d-%m-%Y')  'expected_delivery_date', CASE WHEN IM.DeliveryStatus = 'Y' THEN 'Delivered' WHEN IM.DeliveryStatus = 'N' THEN 'Not delivered' END AS 'status',DATE_FORMAT(IM.ActualDeliveryDate, '%d-%m-%Y') 'actual_delivery_date', SM.Name 'supplier_name', EM.EmployeeName 'ordered_by' FROM invoicemaster IM LEFT JOIN quotationmaster QM ON QM.Id = IM.refQuotation LEFT JOIN suppliermaster SM ON SM.Id = IM.refSupplier LEFT JOIN employeemaster EM ON EM.Id = IM.refEmployee where DeliveryStatus = "N" ORDER BY IM.DeliveryDate ASC;`;
+  const query = `SELECT IM.Id 'invoice_id', IM.InvoiceNumber 'invoice_number',DATE_FORMAT(IM.DeliveryDate, '%d-%m-%Y')  'expected_delivery_date', CASE WHEN IM.DeliveryStatus = 'Y' THEN 'Delivered' WHEN IM.DeliveryStatus = 'N' THEN 'Not delivered' END AS 'status',DATE_FORMAT(IM.ActualDeliveryDate, '%d-%m-%Y') 'actual_delivery_date', SM.Name 'supplier_name', EM.EmployeeName 'ordered_by' FROM invoicemaster IM LEFT JOIN quotationmaster QM ON QM.Id = IM.refQuotation LEFT JOIN suppliermaster SM ON SM.Id = IM.refSupplier LEFT JOIN employeemaster EM ON EM.Id = IM.refEmployee where DeliveryStatus = 'N' ORDER BY IM.DeliveryDate ASC;`;
   const activeOrderList = await executeQuery(query);
   res.status(200).send(activeOrderList);
 }
 
 const getDeliveredOrderList = async (req, res)=>{
-  const query = `SELECT IM.Id 'invoice_id', IM.InvoiceNumber 'invoice_number',DATE_FORMAT(IM.DeliveryDate, '%d-%m-%Y')  'expected_delivery_date', CASE WHEN IM.DeliveryStatus = 'Y' THEN 'Delivered' WHEN IM.DeliveryStatus = 'N' THEN 'Not delivered' END AS 'status',DATE_FORMAT(IM.ActualDeliveryDate, '%d-%m-%Y') 'actual_delivery_date', SM.Name 'supplier_name', EM.EmployeeName 'ordered_by' FROM invoicemaster IM LEFT JOIN quotationmaster QM ON QM.Id = IM.refQuotation LEFT JOIN suppliermaster SM ON SM.Id = IM.refSupplier LEFT JOIN employeemaster EM ON EM.Id = IM.refEmployee where DeliveryStatus = "Y" ORDER BY IM.DeliveryDate ASC;`;
+  const query = `SELECT IM.Id 'invoice_id', IM.InvoiceNumber 'invoice_number',DATE_FORMAT(IM.DeliveryDate, '%d-%m-%Y')  'expected_delivery_date', CASE WHEN IM.DeliveryStatus = 'Y' THEN 'Delivered' WHEN IM.DeliveryStatus = 'N' THEN 'Not delivered' END AS 'status',DATE_FORMAT(IM.ActualDeliveryDate, '%d-%m-%Y') 'actual_delivery_date', SM.Name 'supplier_name', EM.EmployeeName 'ordered_by' FROM invoicemaster IM LEFT JOIN quotationmaster QM ON QM.Id = IM.refQuotation LEFT JOIN suppliermaster SM ON SM.Id = IM.refSupplier LEFT JOIN employeemaster EM ON EM.Id = IM.refEmployee where DeliveryStatus = 'Y' ORDER BY IM.DeliveryDate ASC;`;
   const deliveredOrderList = await executeQuery(query);
   res.status(200).send(deliveredOrderList);
 }
