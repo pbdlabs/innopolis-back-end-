@@ -12,7 +12,10 @@ const {
   getProjects,
   getMaterialList,
   materialReq,
-  materialReqStatus
+  materialReqStatus,
+  getAllComponentType, 
+  getAllItem, 
+  getAllComponent
 } = require("../controllers/designEm");
 
 router.route("/componenttype").get(getComponentType).post(addComponentType);
@@ -23,5 +26,8 @@ router.route("/materials").get(getMaterialList);
 router.route("/materialreq").post(materialReq);
 router.route("/materialreqstatus").get(materialReqStatus);
 router.route('/projects').get(getProjects)
+router.route('/componenttypelist').get(getAllComponentType);
+router.route('/componentlist').get(getAllComponent);
+router.route('/itemlist').get(getAllItem);
 
 module.exports = router;

@@ -179,4 +179,22 @@ FROM
     res.status(200).json(response);
 }
 
-module.exports = {getComponentType,addComponentType, getComponent,addComponent, addItemType, getItemType, getSpecs,addSpecs,getProjects, getMaterialList, materialReq, materialReqStatus};
+const getAllComponentType = async (req, res) =>{
+    let query = `SELECT CTM.Id 'type-id', CTM.ComponentType 'component_type' FROM componenttypemaster CTM;`;
+    let allComponentType = await executeQuery(query)
+    res.status(200).json(allComponentType);
+}
+
+const getAllItem = async(req, res) =>{
+    let query = `SELECT IM.Id 'item_id', IM.ItemType 'item' FROM itemmaster IM;`;
+    let allItem = await executeQuery(query);
+    res.status(200).json(allItem);
+}
+
+const getAllComponent = async (req, res) => {
+    let query = `SELECT CM.Id 'component_id', CM.ComponentName 'component_name' FROM componentmaster CM;`;
+    let allComponent = await executeQuery(query)
+    res.status(200).json(allComponent);
+}
+
+module.exports = {getComponentType,addComponentType, getComponent,addComponent, addItemType, getItemType, getSpecs,addSpecs,getProjects, getMaterialList, materialReq, materialReqStatus, getAllComponentType, getAllItem, getAllComponent};
