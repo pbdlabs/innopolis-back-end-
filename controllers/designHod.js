@@ -94,7 +94,7 @@ const editProject = async(req, res)=>{
         res.status(400).json({ message: "Missing required fields." });
     }
 
-    let query = `UPDATE projectmaster SET ProjectNumber = ?, ProjectName = ?, refProjectLead= ?, refClient = ?, refPlant = ?, status = ?,  where Id = ?;`;
+    let query = `UPDATE projectmaster SET ProjectNumber = ?, ProjectName = ?, refProjectLead= ?, refClient = ?, refPlant = ?, status = ?  where Id = ?;`;
     let params = [project_code, project_name,project_lead,client, plant, status, project_id];
 
     await executeQuery(query, params);

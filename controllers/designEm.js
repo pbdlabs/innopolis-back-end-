@@ -134,4 +134,49 @@ const materialReq = async(req, res) =>{
 
 }
 
-module.exports = {getComponentType,addComponentType, getComponent,addComponent, addItemType, getItemType, getSpecs,addSpecs,getProjects, getMaterialList, materialReq};
+const materialReqStatus = async (req, res) => {
+    let query = `SELECT 
+    PM.ProjectNumber 'project_code',
+    PM.ProjectName 'project_name',
+    CTM.ComponentType 'component_type',
+    CM.ComponentName 'component_name',
+    SM.Specs 'specs',
+    IM.ItemType 'item',
+    CASE
+        WHEN IVM.Id IS NULL THEN 'No Information'
+        WHEN
+            IVM.DeliveryDate IS NOT NULL
+        THEN
+            CASE
+                WHEN
+                    DATEDIFF(CURDATE(), IVM.DeliveryDate) >= 0
+                THEN
+                    CONCAT(DATEDIFF(CURDATE(), IVM.DeliveryDate),
+                            ' days')
+                ELSE 'Delivery Date Passed'
+            END
+    END AS 'lead_time',
+    CASE
+        WHEN MM.Status = 'Y' THEN 'Approved'
+        WHEN MM.Status = 'N' THEN 'Rejected'
+        WHEN MM.Status = 'P' THEN 'Pending'
+    END AS status
+FROM
+    materialmaster MM
+        JOIN
+    componenttypemaster CTM ON CTM.Id = MM.refComponentType
+        JOIN
+    componentmaster CM ON CM.Id = MM.refComponent
+        JOIN
+    specsmaster SM ON SM.Id = MM.refSpecs
+        JOIN
+    itemmaster IM ON IM.Id = MM.refItemType
+        JOIN
+    projectmaster PM ON PM.Id = MM.refProject
+        LEFT JOIN
+    invoicemaster IVM ON IVM.Id = MM.refInvoice;`
+    let response = await executeQuery(query);
+    res.status(200).json(response);
+}
+
+module.exports = {getComponentType,addComponentType, getComponent,addComponent, addItemType, getItemType, getSpecs,addSpecs,getProjects, getMaterialList, materialReq, materialReqStatus};
