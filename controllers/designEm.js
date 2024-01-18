@@ -180,7 +180,7 @@ FROM
 }
 
 const getAllComponentType = async (req, res) =>{
-    let query = `SELECT CTM.Id 'type-id', CTM.ComponentType 'component_type' FROM componenttypemaster CTM;`;
+    let query = `SELECT CTM.Id 'type_id', CTM.ComponentType 'component_type' FROM componenttypemaster CTM;`;
     let allComponentType = await executeQuery(query)
     res.status(200).json(allComponentType);
 }
