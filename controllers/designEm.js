@@ -66,7 +66,7 @@ const addComponent = async(req, res) =>{
         res.status(400).json({ message: "Missing required fields." });
     }
     let query = "insert into componentmaster (ComponentName, refItem) values (?, ?);";
-    let params = [item_id,component_name];
+    let params = [component_name, item_id];
 
     await executeQuery(query, params);
 
