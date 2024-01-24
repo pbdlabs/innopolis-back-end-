@@ -81,7 +81,7 @@ const createProject = async (req, res) =>{
 
 const getProjects = async(req, res) =>{
 
-    let query = `select pm.Id "project_id", pm.ProjectName "project_name", pm.ProjectNumber "project_code", plm.PlantName "plant_name", em.EmployeeName "project_lead", em.Id "project_lead_id", cm.ClientName "client_name", cm.Id "client_id", pm.status "status", pm.DateCreated "date_created" from projectmaster pm join employeemaster em on em.Id = pm.refProjectLead join clientmaster cm on cm.Id = pm.refClient join plantmaster plm on plm.Id = pm.refPlant;`;
+    let query = `select pm.Id "project_id", pm.ProjectName "project_name", pm.ProjectNumber "project_code", plm.PlantName "plant_name", ssm.SubSystem 'sub_system', em.EmployeeName "project_lead", em.Id "project_lead_id", cm.ClientName "client_name", cm.Id "client_id", pm.status "status", pm.DateCreated "date_created" from projectmaster pm join employeemaster em on em.Id = pm.refProjectLead join clientmaster cm on cm.Id = pm.refClient join subsystemmaster ssm on ssm.Id = pm.refSubSystem join plantmaster plm on plm.Id = ssm.refPlant;`;
     let projectList = await executeQuery(query);
     
     res.status(200).json(projectList);

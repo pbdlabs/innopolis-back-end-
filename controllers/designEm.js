@@ -97,9 +97,9 @@ const addSpecs = async (req, res)=>{
 
 const getProjects = async(req, res) =>{
 
-    let query = `select pm.Id "project_id", pm.ProjectName "project_name", pm.ProjectNumber "project_code", plm.PlantName "plant_name", em.EmployeeName "project_lead", cm.ClientName "client_name", pm.status "status", pm.DateCreated "date_created" from projectmaster pm join employeemaster em on em.Id = pm.refProjectLead join clientmaster cm on cm.Id = pm.refClient join plantmaster plm on plm.Id = pm.refPlant where pm.status = 'Active';`;
+    let query = `select pm.Id "project_id", pm.ProjectName "project_name", pm.ProjectNumber "project_code", ssm.SubSystem "sub_system", plm.PlantName "plant_name", em.EmployeeName "project_lead", cm.ClientName "client_name", pm.status "status", pm.DateCreated "date_created" from projectmaster pm LEFT join employeemaster em on em.Id = pm.refProjectLead join clientmaster cm on cm.Id = pm.refClient join subsystemmaster ssm on ssm.Id = pm.refSubSystem join plantmaster plm on plm.Id = ssm.refPlant where pm.status = 'Active';`;
     let projectList = await executeQuery(query);
-    
+    //project_id, project_name, project_code, sub_system, plant_name, project_lead, client_name, status, date_created
     res.status(200).json(projectList);
 }
 
@@ -132,6 +132,54 @@ const materialReq = async(req, res) =>{
 
     res.status(200).json("Material request sent successfuly.");
 
+}
+
+const getSubmittedMaterials = async (req, res)=>{
+    const subsystem = req.query.sub_system;
+
+    let query = `SELECT 
+                    mm.Id 'material_id',
+                    JSON_OBJECT(mm.refComponent, cm.ComponentName) AS component,
+                    JSON_OBJECT(mm.refComponentType, ctm.ComponentType) AS component_type,
+                    JSON_OBJECT(mm.refSpecs, sm.Specs) AS specs,
+                    JSON_OBJECT(mm.refItemType, im.ItemType) AS item,
+                    JSON_OBJECT('tag_id', mm.TagId) AS 'tag_id'
+                FROM
+                    materialmaster mm
+                        JOIN
+                    componentmaster cm ON cm.Id = mm.refComponent
+                        JOIN
+                    componenttypemaster ctm ON ctm.Id = mm.refComponentType
+                        JOIN
+                    specsmaster sm ON sm.Id = mm.refSpecs
+                        JOIN
+                    itemmaster im ON im.Id = mm.refItemType
+                WHERE
+                    refSubSystem = ${subsystem} AND isForwarded = 0;`;
+    
+    const submittedMaterials = await executeQuery(query);
+    res.status(200).json(submittedMaterials);
+
+}
+
+const submitMaterialReq = async (req, res)=>{
+    const materialArray = req.body.materialArray;
+    let query = "insert into materialmaster (refSubsystem, TagId, refComponent, refComponentType, refSpecs, refItemType, RequestedBy, isForwarded) values(?,?,?,?,?,?,?,?);"
+    await Promise.all(materialArray.map(async(item)=>{
+        let params = [item.sub_system, item.tag_id, item.component, item.component_type, item.specs, item.item, item.user_id, 0]
+        await executeQuery(query,params)
+    }))
+    res.status(200).json("Material submitted successfuly.");
+}
+
+const forwardMaterialReq = async (req, res) => {
+    const materialList = req.body.materialList;
+    let query = "update materialmaster set isForwarded = 1 where Id = ?;"
+    await Promise.all(materialList.map(async(item)=>{
+        let params = [item]
+        await executeQuery(query,params)
+    }))
+    res.status(200).json("Material request submitted successfuly.");
 }
 
 const materialReqStatus = async (req, res) => {
@@ -197,4 +245,4 @@ const getAllComponent = async (req, res) => {
     res.status(200).json(allComponent);
 }
 
-module.exports = {getComponentType,addComponentType, getComponent,addComponent, addItemType, getItemType, getSpecs,addSpecs,getProjects, getMaterialList, materialReq, materialReqStatus, getAllComponentType, getAllItem, getAllComponent};
+module.exports = {getComponentType,addComponentType, getComponent,addComponent, addItemType, getItemType, getSpecs,addSpecs,getProjects, getMaterialList, materialReq, materialReqStatus, getAllComponentType, getAllItem, getAllComponent, getSubmittedMaterials, submitMaterialReq, forwardMaterialReq};

@@ -15,7 +15,10 @@ const {
   materialReqStatus,
   getAllComponentType, 
   getAllItem, 
-  getAllComponent
+  getAllComponent,
+  getSubmittedMaterials,
+  submitMaterialReq,
+  forwardMaterialReq
 } = require("../controllers/designEm");
 
 router.route("/componenttype").get(getComponentType).post(addComponentType);
@@ -29,5 +32,6 @@ router.route('/projects').get(getProjects)
 router.route('/componenttypelist').get(getAllComponentType);
 router.route('/componentlist').get(getAllComponent);
 router.route('/itemlist').get(getAllItem);
-
+router.route('/submittedmaterials').get(getSubmittedMaterials).post(submitMaterialReq)
+router.route('/forwardreq').post(forwardMaterialReq)
 module.exports = router;
